@@ -9,15 +9,11 @@ import {
 import { useEffect, useState } from "react";
 import { ApiEndpoint } from "../types";
 import { getMethodColor } from "../lib/utils";
-import EndpointDetails from "./EndpointDetails";
+import { useApiEndpoint } from "./ApiProvider";
 
-export default function EndpointList({
-  urlEndpoint,
-}: {
-  urlEndpoint?: string;
-}) {
+export default function EndpointList({ baseUrl }: { baseUrl: string }) {
   async function fetchOpenAPI(): Promise<OpenAPIObject> {
-    const res = await fetch(urlEndpoint + "/openapi.json");
+    const res = await fetch(baseUrl + "/openapi.json");
     if (!res.ok) throw new Error(`Failed to fetch OpenAPI: ${res.statusText}`);
     const json = await res.json();
     return json as OpenAPIObject;
@@ -37,7 +33,6 @@ export default function EndpointList({
 
     return current;
   }
-
   // Enhanced function to recursively resolve all schema references
   function resolveSchema(schema: any, openApiSpec: OpenAPIObject): any {
     if (!schema) return null;
@@ -199,6 +194,7 @@ export default function EndpointList({
             requestBody,
             responses,
             security: operation.security,
+            baseUrl,
           });
         }
       }
@@ -213,10 +209,6 @@ export default function EndpointList({
   const [searchTerm, setSearchTerm] = useState("");
   const [hidden, setHidden] = useState(false);
 
-  const [selectedEndpoint, setSelectedEndpoint] = useState<ApiEndpoint | null>(
-    null
-  );
-
   const [endpoints, setEndpoints] = useState<ApiEndpoint[]>([]);
 
   const filteredEndpoints = endpoints.filter(
@@ -226,29 +218,29 @@ export default function EndpointList({
   );
 
   useEffect(() => {
-    if (urlEndpoint) {
+    if (baseUrl) {
       getEndpoints().then((result) => {
         if (result) setEndpoints(result);
         else setEndpoints([]);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlEndpoint]);
+  }, [baseUrl]);
 
-  if (!urlEndpoint) {
+  if (!baseUrl) {
     return (
       <div className="text-center text-base-content/50 mt-8">
         <p>No url endpoints provided</p>
       </div>
     );
   }
-
+  const { addApi } = useApiEndpoint();
   return (
     <>
       {/* Endpoints List */}
       <div className="flex flex-col justify-between mb-10 p-4 bg-base-200 rounded-lg border border-base-300">
         <div className="flex items-center gap-3">
-          <span className="font-semibold text-primary">URL: {urlEndpoint}</span>
+          <span className="font-semibold text-primary">URL: {baseUrl}</span>
         </div>
         <div className="flex items-center my-3">
           <input
@@ -271,7 +263,7 @@ export default function EndpointList({
               {filteredEndpoints.map((endpoint) => (
                 <div key={endpoint.id}>
                   <div
-                    onClick={() => setSelectedEndpoint(endpoint)}
+                    onClick={() => addApi(endpoint)}
                     className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-base-300"
                   >
                     <div className="card-body p-3">
@@ -293,12 +285,6 @@ export default function EndpointList({
                       </code>
                     </div>
                   </div>
-                  {selectedEndpoint && (
-                    <EndpointDetails
-                      endpoint={selectedEndpoint}
-                      onClose={() => setSelectedEndpoint(null)}
-                    />
-                  )}
                 </div>
               ))}
             </div>

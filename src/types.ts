@@ -25,4 +25,20 @@ export type ApiEndpoint = {
     };
   };
   security?: any[];
+  baseUrl: string;
+};
+
+export type RequestData = {
+  pathParams: { [key: string]: string };
+  queryParams: { [key: string]: string };
+  headers: { [key: string]: string };
+  body: string;
+};
+
+export type ResponseData = {
+  status: number;
+  statusText: string;
+  headers: { [key: string]: string };
+  data: any;
+  error?: string;
 };

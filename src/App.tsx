@@ -1,46 +1,14 @@
-import { OpenAPIObject } from "openapi3-ts/oas30";
-import { useState } from "react";
-import Sidebar from "./components/navigation/Sidebar";
+import { useApiEndpoint } from "./components/ApiProvider";
+import EndpointTester from "./components/EndpointTester";
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  async function fetchOpenAPI(): Promise<OpenAPIObject> {
-    const res = await fetch("http://localhost:8001/openapi.json");
-    if (!res.ok) throw new Error(`Failed to fetch OpenAPI: ${res.statusText}`);
-    const json = await res.json();
-    return json as OpenAPIObject;
-  }
-
-  async function listEndpoints(api: OpenAPIObject) {
-    const spec = api;
-
-    for (const [path, pathItem] of Object.entries(spec.paths)) {
-      if (!pathItem) continue;
-
-      for (const method of [
-        "get",
-        "post",
-        "put",
-        "delete",
-        "patch",
-        "options",
-        "head",
-      ] as const) {
-        const operation = pathItem[method];
-        if (!operation) continue;
-
-        console.log(
-          `[${method.toUpperCase()}] ${path} → ${operation.summary || ""}`
-        );
-      }
-    }
-  }
-
+  const { apiEndpoints } = useApiEndpoint();
   return (
-    <>
-      <button className="btn">Test</button>
-    </>
+    <div className="flex flex-col items-center justify-center w-full gap-12">
+      {apiEndpoints?.map((endpoint) => (
+        <EndpointTester endpoint={endpoint} />
+      ))}
+    </div>
   );
 }
 
