@@ -2,12 +2,10 @@ import { useApiEndpoint } from "./components/ApiProvider";
 import EndpointTester from "./components/EndpointTester";
 
 function App() {
-  const { apiEndpoints } = useApiEndpoint();
+  const { selectedEndpoint } = useApiEndpoint();
   return (
-    <div className="flex flex-col items-center justify-center w-full gap-12">
-      {apiEndpoints?.map((endpoint) => (
-        <EndpointTester endpoint={endpoint} />
-      ))}
+    <div className="flex flex-col items-center justify-center py-10 w-full gap-12">
+      {selectedEndpoint && <EndpointTester endpoint={selectedEndpoint} />}
     </div>
   );
 }

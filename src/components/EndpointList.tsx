@@ -217,13 +217,17 @@ export default function EndpointList({ baseUrl }: { baseUrl: string }) {
       endpoint.path.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => {
+  function fetchEndpoints() {
     if (baseUrl) {
       getEndpoints().then((result) => {
         if (result) setEndpoints(result);
         else setEndpoints([]);
       });
     }
+  }
+
+  useEffect(() => {
+    fetchEndpoints();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [baseUrl]);
 
@@ -234,13 +238,16 @@ export default function EndpointList({ baseUrl }: { baseUrl: string }) {
       </div>
     );
   }
-  const { addApi } = useApiEndpoint();
+  const { setSelectedEndpoint } = useApiEndpoint();
   return (
     <>
       {/* Endpoints List */}
       <div className="flex flex-col justify-between mb-10 p-4 bg-base-200 rounded-lg border border-base-300">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-3">
           <span className="font-semibold text-primary">URL: {baseUrl}</span>
+          <button onClick={fetchEndpoints} className="btn btn-soft btn-sm">
+            Refresh
+          </button>
         </div>
         <div className="flex items-center my-3">
           <input
@@ -263,7 +270,7 @@ export default function EndpointList({ baseUrl }: { baseUrl: string }) {
               {filteredEndpoints.map((endpoint) => (
                 <div key={endpoint.id}>
                   <div
-                    onClick={() => addApi(endpoint)}
+                    onClick={() => setSelectedEndpoint(endpoint)}
                     className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-base-300"
                   >
                     <div className="card-body p-3">
