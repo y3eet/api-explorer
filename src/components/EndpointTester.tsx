@@ -32,6 +32,12 @@ export default function EndpointTester({ endpoint }: EndpointTesterProps) {
   const [loading, setLoading] = useState(false);
   const [baseUrl, setBaseUrl] = useState(endpoint.baseUrl);
 
+  // Update baseUrl when endpoint changes
+  useEffect(() => {
+    setBaseUrl(endpoint.baseUrl);
+    setResponse(null);
+  }, [endpoint.baseUrl, endpoint]);
+
   // Initialize request data with default values based on schema
   useEffect(() => {
     const initialData: RequestData = {
@@ -90,6 +96,7 @@ export default function EndpointTester({ endpoint }: EndpointTesterProps) {
       const url = buildUrl(baseUrl, endpoint, requestData);
       const options: RequestInit = {
         method: endpoint.method,
+        credentials: "include",
         headers: { ...requestData.headers },
       };
 
@@ -172,7 +179,7 @@ export default function EndpointTester({ endpoint }: EndpointTesterProps) {
       updateHeader(name, "");
     }
   };
-  const { deleteApi } = useApiEndpoint();
+  const { setSelectedEndpoint } = useApiEndpoint();
 
   return (
     <>
@@ -199,7 +206,7 @@ export default function EndpointTester({ endpoint }: EndpointTesterProps) {
             <button
               className="btn btn-ghost btn-square btn-sm text-error"
               title="Remove endpoint"
-              onClick={() => deleteApi(endpoint.id)}
+              onClick={() => setSelectedEndpoint(undefined)}
             >
               <Trash2 size={20} />
             </button>
