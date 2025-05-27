@@ -15,7 +15,7 @@ export default function Sidebar() {
           <h2 className="text-lg font-semibold flex-1">API Explorer</h2>
           <div className="flex gap-1 items-center">
             <a
-              href="https://github.com/"
+              href="https://github.com/y3eet/api-explorer"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-soft btn-sm hover:btn-primary transition-colors"
@@ -27,7 +27,10 @@ export default function Sidebar() {
           </div>
         </div>
         <div className="form-control">
-          <button onClick={() => setModalOpen(true)} className="btn btn-sm btn-soft">
+          <button
+            onClick={() => setModalOpen(true)}
+            className="btn btn-sm btn-soft"
+          >
             Add URL
           </button>
           <Modal open={modalOpen} onClickOutside={() => setModalOpen(false)}>
